@@ -1,0 +1,25 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t depblue/react-docker -f ./client/Dockerfile.dev .
+
+script:
+  - docker run depblue/react-docker npm test -- --coverage
+
+after_success:
+  - docker build -t de3pblue/multi-client ./client
+  - docker build -t de3pblue/multi-nginx ./nginx
+  - docker build -t de3pblue/multi-server ./server
+  - docker build -t de3pblue/multi-worker ./worker
+#login to docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+#Push images to docker hub
+  - docker push de3pblue/multi-client
+  - docker push de3pblue/multi-nginx
+  - docker push de3pblue/multi-server
+  - docker push de3pblue/multi-worker
+
+
