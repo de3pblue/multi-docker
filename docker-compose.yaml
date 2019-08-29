@@ -1,0 +1,54 @@
+#in order for react watcher to be able to detect file changes, please check client/.env
+version: '3'
+services: 
+  postgres:
+    image: 'postgres:latest'
+  redis:
+    image: 'redis:latest'
+  api:
+    depends_on:
+      - postgres
+      - redis
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server # set directory
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    environment: # set environtment variables
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client # set directory
+    volumes:
+      - /app/node_modules # prevent attach host folder into container
+      - ./client:/app
+  worker:
+    depends_on:
+      - redis
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker # set directory
+    volumes:
+      - /app/node_modules # prevent attach host folder into container
+      - ./worker:/app
+    environment: # set environtment variables
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  nginx:
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - '3050:80'
