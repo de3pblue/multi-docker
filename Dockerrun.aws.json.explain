@@ -1,0 +1,1 @@
+essential -> if true then if container crash other container will also be closed so web server will be false
