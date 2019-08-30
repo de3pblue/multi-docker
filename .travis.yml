@@ -4,22 +4,22 @@ services:
   - docker
 
 before_install:
-  - docker build -t de3pblue/react-test -f ./client/Dockerfile.dev ./client
+  - docker build -t de3p/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run -e CI=true de3pblue/react-test npm test
+  - docker run -e CI=true de3p/react-test npm test
 
 after_success:
-  - docker build -t de3pblue/multi-client ./client
-  - docker build -t de3pblue/multi-nginx ./nginx
-  - docker build -t de3pblue/multi-server ./server
-  - docker build -t de3pblue/multi-worker ./worker
+  - docker build -t de3p/multi-client ./client
+  - docker build -t de3p/multi-nginx ./nginx
+  - docker build -t de3p/multi-server ./server
+  - docker build -t de3p/multi-worker ./worker
 #login to docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 #Push images to docker hub
-  - docker push de3pblue/multi-client
-  - docker push de3pblue/multi-nginx
-  - docker push de3pblue/multi-server
-  - docker push de3pblue/multi-worker
+  - docker push de3p/multi-client
+  - docker push de3p/multi-nginx
+  - docker push de3p/multi-server
+  - docker push de3p/multi-worker
 
 
